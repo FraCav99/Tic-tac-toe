@@ -26,15 +26,14 @@ const model = (() => {
             }
         }
 
-        if (win) return win;
-        else return;
+        return win;
     }
 
 
     const resetGameBoard = () => {
-        for (let row of gameBoard) {
-            for (let rowEl of row) {
-                rowEl = "";
+        for (let i = 0; i < gameBoard.length; i++) {
+            for (let j = 0; j < gameBoard[i].length; j++) {
+                gameBoard[i][j] = "";
             }
         }
     }
@@ -44,7 +43,6 @@ const model = (() => {
         if (checkRows()) {
             alert('win!');
             resetGameBoard();
-            console.log(gameBoard);
             return true;
         } else return;
     }
@@ -81,8 +79,8 @@ const view = (() => {
 
     const resetBoard = () => {
         for (let row of gridContainer.children) {
-            for (let i = 0; i < row.length; i++) {
-                row[i].textContent = "";
+            for (let i = 0; i < row.children.length; i++) {
+                row.children[i].textContent = "";
             }
         }
     }
