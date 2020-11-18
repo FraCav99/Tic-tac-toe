@@ -9,9 +9,9 @@ const model = (() => {
         gameBoard[parentIndex][childIndex] = value;
     };
 
-    const checkRow = row => {
-        if (row.every(el => el !== "")) {
-            if (row.every(el => el === row[0])) return true;
+    const checkMatch = arr => {
+        if (arr.every(el => el !== "")) {
+            if (arr.every(el => el === arr[0])) return true;
             else return false;
         }
     }
@@ -20,9 +20,31 @@ const model = (() => {
         let win = false;
 
         for (let row of gameBoard) {
-            if (checkRow(row)) {
+            if (checkMatch(row)) {
                 win = true;
                 break;
+            }
+        }
+
+        return win;
+    }
+
+
+    const checkCols = () => {
+        // temporary store column like "row" array
+        let col = [];
+        let win = false;
+
+        for (let i = 0; i < gameBoard.length; i++) {
+            // take only the value corresponding to index value
+            // for every row
+            col = gameBoard.map(val => val[i]);
+            
+            if (checkMatch(col)) {
+                win = true;
+                break;
+            } else {
+                col = [];
             }
         }
 
@@ -40,7 +62,7 @@ const model = (() => {
 
 
     const checkWin = () => {
-        if (checkRows()) {
+        if (checkRows() || checkCols()) {
             alert('win!');
             resetGameBoard();
             return true;
