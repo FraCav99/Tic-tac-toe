@@ -52,6 +52,49 @@ const model = (() => {
     }
 
 
+    const checkDiags = () => {
+        let win = false;
+
+        const leftDiag = () => {
+            let diag = [];
+
+            // left diags (starting from first row)
+            for (let i = 0; i < gameBoard.length; i++) {
+                diag.push(gameBoard[i][i]);
+            }
+
+            if (checkMatch(diag)) {
+                return true;
+            }
+            else {
+                col = [];
+                return;
+            }
+        }
+
+        const rightDiag = () => {
+            let diag = [];
+
+            // right diags (starting from first row)
+            for (let i = 0; i < gameBoard.length; i++) {
+                diag.push(gameBoard[i][gameBoard.length - (i + 1)]);
+            }
+
+            if (checkMatch(diag)) {
+                return true;
+            }
+            else {
+                col = [];
+                return;
+            }
+        }
+
+        if (leftDiag() || rightDiag()) win = true;
+
+        return win;
+    }
+
+
     const resetGameBoard = () => {
         for (let i = 0; i < gameBoard.length; i++) {
             for (let j = 0; j < gameBoard[i].length; j++) {
@@ -62,7 +105,11 @@ const model = (() => {
 
 
     const checkWin = () => {
-        if (checkRows() || checkCols()) {
+        if (
+            checkRows() || 
+            checkCols() ||
+            checkDiags()
+            ) {
             alert('win!');
             resetGameBoard();
             return true;
