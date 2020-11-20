@@ -5,6 +5,8 @@ const model = (() => {
         ["", "", ""]
     ];
 
+    //let gameActive = false;
+
     const setGameBoard = (parentIndex, childIndex, value) => {
         gameBoard[parentIndex][childIndex] = value;
     };
@@ -36,8 +38,7 @@ const model = (() => {
         let win = false;
 
         for (let i = 0; i < gameBoard.length; i++) {
-            // take only the value corresponding to index value
-            // for every row
+            // take only the value corresponding to index value for every row
             col = gameBoard.map(val => val[i]);
             
             if (checkMatch(col)) {
@@ -104,6 +105,21 @@ const model = (() => {
     }
 
 
+    const checkTie = () => {
+        let tie = 0;
+
+        for (let row of gameBoard) {
+            if (row.every(el => el !== "")) tie++;
+            else break;
+        }
+
+        if (tie === 3) {
+            alert("Tie");
+            return true;
+        } else return;
+    }
+
+
     const checkWin = () => {
         if (
             checkRows() || 
@@ -113,19 +129,34 @@ const model = (() => {
             alert('win!');
             resetGameBoard();
             return true;
-        } else return;
+        }
+    }
+
+
+    // Create players
+    const Player = (name, mark) => {
+        const getName = () => name;
+        const getMark = () => mark;
+        let turn = false;
+
+        return { getName, getMark, turn }
     }
 
     return {
         gameBoard,
         setGameBoard,
         checkWin,
+        checkTie,
+        Player
     };
 })();
 
 
 const view = (() => {
     const gridContainer = document.getElementById('board__container');
+    const startPlayBtn = document.getElementById('start__play');
+    const playerOneInput = document.getElementById('player__one');
+    const playerTwoInput = document.getElementById('player__two');
 
     const displayBoard = board => {
         for (let row of board) {
@@ -156,6 +187,9 @@ const view = (() => {
 
     return {
         gridContainer,
+        startPlayBtn,
+        playerOneInput,
+        playerTwoInput,
         displayBoard,
         updateBoard,
         resetBoard
@@ -165,10 +199,36 @@ const view = (() => {
 
 const controller = (() => {
     const board = view.gridContainer;
+    const startPlayBtn = view.startPlayBtn;
+    let playerOne, playerTwo;
+
+    startPlayBtn.addEventListener('click', () => {
+        playerOne = model.Player(view.playerOneInput.value, 'X');
+        playerOne.turn = true;  // player one always start first
+
+        playerTwo = model.Player(view.playerTwoInput.value, 'O');
+
+        //console.log(playerOne.getName(), playerTwo.getName());
+    });
 
     board.addEventListener('click', e => {
         let el = e.target;
-        view.updateBoard(el, 'X');
+        
+        if (playerOne.turn) {
+            console.log(`it's ${playerOne.getName()} turn!`);
+            if (el.textContent === "") {
+                view.updateBoard(el, playerOne.getMark());
+                playerOne.turn = false;
+                playerTwo.turn = true;
+            }
+        } else if (playerTwo.turn) {
+            console.log(`it's ${playerTwo.getName()} turn!`);
+            if (el.textContent === "") {
+                view.updateBoard(el, playerTwo.getMark());
+                playerOne.turn = true;
+                playerTwo.turn = false;
+            }
+        }
 
         // take parent index (row)
         let parentElement = el.parentElement;
@@ -179,7 +239,7 @@ const controller = (() => {
         
         model.setGameBoard(parentIndex, childIndex, el.textContent);
         
-        if (model.checkWin()) {
+        if (model.checkWin() || model.checkTie()) {
             view.resetBoard();
         }
     });
