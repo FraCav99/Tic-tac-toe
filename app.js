@@ -20,15 +20,17 @@ const model = (() => {
     
     const checkRows = () => {
         let win = false;
+        let winningRow;
 
         for (let row of gameBoard) {
             if (checkMatch(row)) {
                 win = true;
+                winningRow = row;
                 break;
             }
         }
 
-        return win;
+        return {win, winningRow};
     }
 
 
@@ -49,15 +51,17 @@ const model = (() => {
             }
         }
 
-        return win;
+        return {win, col};
     }
 
 
     const checkDiags = () => {
         let win = false;
+        let winningDiag;
 
         const leftDiag = () => {
             let diag = [];
+            let isLeft = false;
 
             // left diags (starting from first row)
             for (let i = 0; i < gameBoard.length; i++) {
@@ -65,16 +69,18 @@ const model = (() => {
             }
 
             if (checkMatch(diag)) {
-                return true;
+                isLeft = true;
             }
             else {
-                col = [];
-                return;
+                diag = [];
             }
+
+            return {isLeft, diag};
         }
 
         const rightDiag = () => {
             let diag = [];
+            let isRight = false;
 
             // right diags (starting from first row)
             for (let i = 0; i < gameBoard.length; i++) {
@@ -82,17 +88,27 @@ const model = (() => {
             }
 
             if (checkMatch(diag)) {
-                return true;
+                isRight = true;
             }
             else {
-                col = [];
-                return;
+                diag = [];
             }
+
+            return {isRight, diag};
         }
 
-        if (leftDiag() || rightDiag()) win = true;
+        const rightDiagonal = rightDiag();
+        const leftDiagonal = leftDiag();
 
-        return win;
+        if (rightDiagonal.isRight) {
+            win = true;
+            winningDiag = rightDiagonal.diag;
+        } else if (leftDiagonal.isLeft) {
+            win = true;
+            winningDiag = leftDiagonal.diag;
+        }
+
+        return {win, winningDiag};
     }
 
 
@@ -107,30 +123,39 @@ const model = (() => {
 
     const checkTie = () => {
         let tie = 0;
+        let isTie = false;
 
         for (let row of gameBoard) {
             if (row.every(el => el !== "")) tie++;
             else break;
         }
 
-        if (tie === 3) {
-            alert("Tie");
-            resetGameBoard();
-            return true;
-        } else return;
+        if (tie === 3) isTie = true;
+
+        return isTie;
     }
 
 
     const checkWin = () => {
-        if (
-            checkRows() || 
-            checkCols() ||
-            checkDiags()
-            ) {
-            alert('win!');
-            resetGameBoard();
-            return true;
+        let win = false;
+        let winningArr;
+
+        const checkRow = checkRows();
+        const checkCol = checkCols();
+        const checkDiag = checkDiags();
+
+        if (checkRow.win) {
+            win = true;
+            winningArr = checkRow.winningRow;
+        } else if (checkCol.win) {
+            win = true;
+            winningArr = checkCol.col;
+        } else if (checkDiag.win) {
+            win = true;
+            winningArr = checkDiag.winningDiag;
         }
+
+        return {win, winningArr};
     }
 
 
@@ -149,6 +174,7 @@ const model = (() => {
         setGameBoard,
         checkWin,
         checkTie,
+        resetGameBoard,
         Player
     };
 })();
@@ -217,14 +243,12 @@ const controller = (() => {
             let el = e.target;
         
             if (playerOne.turn) {
-                console.log(`it's ${playerOne.getName()} turn!`);
                 if (el.textContent === "") {
                     view.updateBoard(el, playerOne.getMark());
                     playerOne.turn = false;
                     playerTwo.turn = true;
                 }
             } else if (playerTwo.turn) {
-                console.log(`it's ${playerTwo.getName()} turn!`);
                 if (el.textContent === "") {
                     view.updateBoard(el, playerTwo.getMark());
                     playerOne.turn = true;
@@ -240,9 +264,20 @@ const controller = (() => {
             let childIndex = Array.from(el.parentNode.children).indexOf(el);
             
             model.setGameBoard(parentIndex, childIndex, el.textContent);
+
+            const checkWin = model.checkWin();
+            const checkTie = model.checkTie();
             
-            if (model.checkWin() || model.checkTie()) {
+            if (checkWin.win) {
+                if (checkWin.winningArr.includes(playerOne.getMark())) console.log('player one win');
+                if (checkWin.winningArr.includes(playerTwo.getMark())) console.log('player two win');
                 view.resetBoard();
+                model.resetGameBoard();
+                model.gameActive = false;
+            } else if (checkTie) {
+                console.log('Tie');
+                view.resetBoard();
+                model.resetGameBoard();
                 model.gameActive = false;
             }
         }
