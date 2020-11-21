@@ -5,7 +5,7 @@ const model = (() => {
         ["", "", ""]
     ];
 
-    //let gameActive = false;
+    let gameActive = false;
 
     const setGameBoard = (parentIndex, childIndex, value) => {
         gameBoard[parentIndex][childIndex] = value;
@@ -115,6 +115,7 @@ const model = (() => {
 
         if (tie === 3) {
             alert("Tie");
+            resetGameBoard();
             return true;
         } else return;
     }
@@ -144,6 +145,7 @@ const model = (() => {
 
     return {
         gameBoard,
+        gameActive,
         setGameBoard,
         checkWin,
         checkTie,
@@ -153,16 +155,18 @@ const model = (() => {
 
 
 const view = (() => {
-    const gridContainer = document.getElementById('board__container');
-    const startPlayBtn = document.getElementById('start__play');
-    const playerOneInput = document.getElementById('player__one');
-    const playerTwoInput = document.getElementById('player__two');
+    const DOM = {
+        gridContainer: document.getElementById('board__container'),
+        startPlayBtn: document.getElementById('start__play'),
+        playerOneInput: document.getElementById('player__one'),
+        playerTwoInput: document.getElementById('player__two')
+    };
 
     const displayBoard = board => {
         for (let row of board) {
             let currentRow = document.createElement('div');
             currentRow.classList.add('board__row');
-            gridContainer.appendChild(currentRow);
+            DOM.gridContainer.appendChild(currentRow);
 
             for (let i = 0; i < row.length; i++) {
                 let newSquare = document.createElement('div');
@@ -178,7 +182,7 @@ const view = (() => {
     }
 
     const resetBoard = () => {
-        for (let row of gridContainer.children) {
+        for (let row of DOM.gridContainer.children) {
             for (let i = 0; i < row.children.length; i++) {
                 row.children[i].textContent = "";
             }
@@ -186,10 +190,7 @@ const view = (() => {
     }
 
     return {
-        gridContainer,
-        startPlayBtn,
-        playerOneInput,
-        playerTwoInput,
+        DOM,
         displayBoard,
         updateBoard,
         resetBoard
@@ -198,49 +199,52 @@ const view = (() => {
 
 
 const controller = (() => {
-    const board = view.gridContainer;
-    const startPlayBtn = view.startPlayBtn;
+    const board = view.DOM.gridContainer;
+    const startPlayBtn = view.DOM.startPlayBtn;
     let playerOne, playerTwo;
 
     startPlayBtn.addEventListener('click', () => {
-        playerOne = model.Player(view.playerOneInput.value, 'X');
+        playerOne = model.Player(view.DOM.playerOneInput.value, 'X');
         playerOne.turn = true;  // player one always start first
 
-        playerTwo = model.Player(view.playerTwoInput.value, 'O');
-
-        //console.log(playerOne.getName(), playerTwo.getName());
+        playerTwo = model.Player(view.DOM.playerTwoInput.value, 'O');
+        model.gameActive = true;
     });
 
+
     board.addEventListener('click', e => {
-        let el = e.target;
+        if (model.gameActive) {
+            let el = e.target;
         
-        if (playerOne.turn) {
-            console.log(`it's ${playerOne.getName()} turn!`);
-            if (el.textContent === "") {
-                view.updateBoard(el, playerOne.getMark());
-                playerOne.turn = false;
-                playerTwo.turn = true;
+            if (playerOne.turn) {
+                console.log(`it's ${playerOne.getName()} turn!`);
+                if (el.textContent === "") {
+                    view.updateBoard(el, playerOne.getMark());
+                    playerOne.turn = false;
+                    playerTwo.turn = true;
+                }
+            } else if (playerTwo.turn) {
+                console.log(`it's ${playerTwo.getName()} turn!`);
+                if (el.textContent === "") {
+                    view.updateBoard(el, playerTwo.getMark());
+                    playerOne.turn = true;
+                    playerTwo.turn = false;
+                }
             }
-        } else if (playerTwo.turn) {
-            console.log(`it's ${playerTwo.getName()} turn!`);
-            if (el.textContent === "") {
-                view.updateBoard(el, playerTwo.getMark());
-                playerOne.turn = true;
-                playerTwo.turn = false;
+    
+            // take parent index (row)
+            let parentElement = el.parentElement;
+            let parentIndex = Array.from(parentElement.parentNode.children).indexOf(parentElement);
+    
+            // take child's index (square)
+            let childIndex = Array.from(el.parentNode.children).indexOf(el);
+            
+            model.setGameBoard(parentIndex, childIndex, el.textContent);
+            
+            if (model.checkWin() || model.checkTie()) {
+                view.resetBoard();
+                model.gameActive = false;
             }
-        }
-
-        // take parent index (row)
-        let parentElement = el.parentElement;
-        let parentIndex = Array.from(parentElement.parentNode.children).indexOf(parentElement);
-
-        // take child's index (square)
-        let childIndex = Array.from(el.parentNode.children).indexOf(el);
-        
-        model.setGameBoard(parentIndex, childIndex, el.textContent);
-        
-        if (model.checkWin() || model.checkTie()) {
-            view.resetBoard();
         }
     });
 
