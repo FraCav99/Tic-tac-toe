@@ -1,14 +1,14 @@
 const model = (() => {
-    const gameBoard = [
+    const _gameBoard = [
         ["", "", ""],
         ["", "", ""],
         ["", "", ""]
     ];
 
-    let gameActive = false;
+    let _gameActive = false;
 
-    const setGameBoard = (parentIndex, childIndex, value) => {
-        gameBoard[parentIndex][childIndex] = value;
+    const _setGameBoard = (parentIndex, childIndex, value) => {
+        _gameBoard[parentIndex][childIndex] = value;
     };
 
     const checkMatch = arr => {
@@ -22,7 +22,7 @@ const model = (() => {
         let win = false;
         let winningRow;
 
-        for (let row of gameBoard) {
+        for (let row of _gameBoard) {
             if (checkMatch(row)) {
                 win = true;
                 winningRow = row;
@@ -39,9 +39,9 @@ const model = (() => {
         let col = [];
         let win = false;
 
-        for (let i = 0; i < gameBoard.length; i++) {
+        for (let i = 0; i < _gameBoard.length; i++) {
             // take only the value corresponding to index value for every row
-            col = gameBoard.map(val => val[i]);
+            col = _gameBoard.map(val => val[i]);
             
             if (checkMatch(col)) {
                 win = true;
@@ -64,8 +64,8 @@ const model = (() => {
             let isLeft = false;
 
             // left diags (starting from first row)
-            for (let i = 0; i < gameBoard.length; i++) {
-                diag.push(gameBoard[i][i]);
+            for (let i = 0; i < _gameBoard.length; i++) {
+                diag.push(_gameBoard[i][i]);
             }
 
             if (checkMatch(diag)) {
@@ -83,8 +83,8 @@ const model = (() => {
             let isRight = false;
 
             // right diags (starting from first row)
-            for (let i = 0; i < gameBoard.length; i++) {
-                diag.push(gameBoard[i][gameBoard.length - (i + 1)]);
+            for (let i = 0; i < _gameBoard.length; i++) {
+                diag.push(_gameBoard[i][_gameBoard.length - (i + 1)]);
             }
 
             if (checkMatch(diag)) {
@@ -112,20 +112,20 @@ const model = (() => {
     }
 
 
-    const resetGameBoard = () => {
-        for (let i = 0; i < gameBoard.length; i++) {
-            for (let j = 0; j < gameBoard[i].length; j++) {
-                gameBoard[i][j] = "";
+    const _resetGameBoard = () => {
+        for (let i = 0; i < _gameBoard.length; i++) {
+            for (let j = 0; j < _gameBoard[i].length; j++) {
+                _gameBoard[i][j] = "";
             }
         }
     }
 
 
-    const checkTie = () => {
+    const _checkTie = () => {
         let tie = 0;
         let isTie = false;
 
-        for (let row of gameBoard) {
+        for (let row of _gameBoard) {
             if (row.every(el => el !== "")) tie++;
             else break;
         }
@@ -136,7 +136,7 @@ const model = (() => {
     }
 
 
-    const checkWin = () => {
+    const _checkWin = () => {
         let win = false;
         let winningArr;
 
@@ -160,7 +160,7 @@ const model = (() => {
 
 
     // Create players
-    const Player = (name, mark) => {
+    const _Player = (name, mark) => {
         const getName = () => name;
         const getMark = () => mark;
         let turn = false;
@@ -169,30 +169,30 @@ const model = (() => {
     }
 
     return {
-        gameBoard,
-        gameActive,
-        setGameBoard,
-        checkWin,
-        checkTie,
-        resetGameBoard,
-        Player
+        _gameBoard,
+        _gameActive,
+        _setGameBoard,
+        _checkWin,
+        _checkTie,
+        _resetGameBoard,
+        _Player
     };
 })();
 
 
 const view = (() => {
-    const DOM = {
+    const _DOM = {
         gridContainer: document.getElementById('board__container'),
         startPlayBtn: document.getElementById('start__play'),
         playerOneInput: document.getElementById('player__one'),
         playerTwoInput: document.getElementById('player__two')
     };
 
-    const displayBoard = board => {
+    const _displayBoard = board => {
         for (let row of board) {
             let currentRow = document.createElement('div');
             currentRow.classList.add('board__row');
-            DOM.gridContainer.appendChild(currentRow);
+            _DOM.gridContainer.appendChild(currentRow);
 
             for (let i = 0; i < row.length; i++) {
                 let newSquare = document.createElement('div');
@@ -203,12 +203,12 @@ const view = (() => {
     };
 
 
-    const updateBoard = (element, sign) => {
+    const _updateBoard = (element, sign) => {
         element.textContent === "" ? element.textContent = sign : null;
     }
 
-    const resetBoard = () => {
-        for (let row of DOM.gridContainer.children) {
+    const _resetBoard = () => {
+        for (let row of _DOM.gridContainer.children) {
             for (let i = 0; i < row.children.length; i++) {
                 row.children[i].textContent = "";
             }
@@ -216,41 +216,41 @@ const view = (() => {
     }
 
     return {
-        DOM,
-        displayBoard,
-        updateBoard,
-        resetBoard
+        _DOM,
+        _displayBoard,
+        _updateBoard,
+        _resetBoard
     }
 })();
 
 
 const controller = (() => {
-    const board = view.DOM.gridContainer;
-    const startPlayBtn = view.DOM.startPlayBtn;
+    const board = view._DOM.gridContainer;
+    const startPlayBtn = view._DOM.startPlayBtn;
     let playerOne, playerTwo;
 
     startPlayBtn.addEventListener('click', () => {
-        playerOne = model.Player(view.DOM.playerOneInput.value, 'X');
+        playerOne = model._Player(view._DOM.playerOneInput.value, 'X');
         playerOne.turn = true;  // player one always start first
 
-        playerTwo = model.Player(view.DOM.playerTwoInput.value, 'O');
-        model.gameActive = true;
+        playerTwo = model._Player(view._DOM.playerTwoInput.value, 'O');
+        model._gameActive = true;
     });
 
 
     board.addEventListener('click', e => {
-        if (model.gameActive) {
+        if (model._gameActive) {
             let el = e.target;
         
             if (playerOne.turn) {
                 if (el.textContent === "") {
-                    view.updateBoard(el, playerOne.getMark());
+                    view._updateBoard(el, playerOne.getMark());
                     playerOne.turn = false;
                     playerTwo.turn = true;
                 }
             } else if (playerTwo.turn) {
                 if (el.textContent === "") {
-                    view.updateBoard(el, playerTwo.getMark());
+                    view._updateBoard(el, playerTwo.getMark());
                     playerOne.turn = true;
                     playerTwo.turn = false;
                 }
@@ -263,28 +263,28 @@ const controller = (() => {
             // take child's index (square)
             let childIndex = Array.from(el.parentNode.children).indexOf(el);
             
-            model.setGameBoard(parentIndex, childIndex, el.textContent);
+            model._setGameBoard(parentIndex, childIndex, el.textContent);
 
-            const checkWin = model.checkWin();
-            const checkTie = model.checkTie();
+            const checkWin = model._checkWin();
+            const checkTie = model._checkTie();
             
             if (checkWin.win) {
-                if (checkWin.winningArr.includes(playerOne.getMark())) console.log('player one win');
-                if (checkWin.winningArr.includes(playerTwo.getMark())) console.log('player two win');
-                view.resetBoard();
-                model.resetGameBoard();
-                model.gameActive = false;
+                if (checkWin.winningArr.includes(playerOne.getMark())) console.log(`${playerOne.getName()} win`);
+                if (checkWin.winningArr.includes(playerTwo.getMark())) console.log(`${playerTwo.getName()} win`);
+                view._resetBoard();
+                model._resetGameBoard();
+                model._gameActive = false;
             } else if (checkTie) {
                 console.log('Tie');
-                view.resetBoard();
-                model.resetGameBoard();
-                model.gameActive = false;
+                view._resetBoard();
+                model._resetGameBoard();
+                model._gameActive = false;
             }
         }
     });
 
     const init = () => {
-        view.displayBoard(model.gameBoard);
+        view._displayBoard(model._gameBoard);
     }
 
     return { init };
