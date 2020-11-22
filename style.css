@@ -5,21 +5,23 @@
 }
 
 body {
-  background-color: black;
+  background-color: #222426;
   color: white;
+  font-family: "Nerko One", cursive;
 }
 
 h1 {
   color: white;
   text-align: center;
   margin-top: 30px;
+  font-size: 40px;
 }
 
 #board__container {
   width: 450px;
   height: 450px;
   margin: 40px auto;
-  /*display: none;  eventually remove */
+  display: none;
 }
 
 .board__row {
@@ -48,12 +50,23 @@ h1 {
   border-right: 2px solid white;
 }
 
+.labels__container {
+  display: none; /* flex */
+  width: 100%;
+  justify-content: space-around;
+  margin-top: 40px;
+}
+
+.highlight_name {
+  text-shadow: 0px 0px 5px red;
+}
+
 /* ================================ */
 
 #players__name {
   width: 70%;
-  margin: 100px auto 0px auto;
-  display: flex;
+  margin: 150px auto 0px auto;
+  display: flex; /* flex / none */
   flex-direction: column;
 }
 
@@ -69,6 +82,53 @@ h1 {
 }
 
 #players__name button {
-  width: 40%;
+  width: 350px;
   margin: auto;
+  padding: 10px 0px;
+  cursor: pointer;
+  background-color: rgb(199, 0, 0);
+  border: none;
+  color: #ccc;
+  box-shadow: 0px 10px 0px 0px rgb(128, 7, 7);
+  border-radius: 5px;
+  transition: box-shadow 0.5s;
+  font-size: 20px;
+}
+
+#players__name button:hover {
+  box-shadow: 0px 20px 0px 0px rgb(128, 7, 7);
+}
+
+#players__name .input__container .input label {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+#players__name .input__container .input input {
+  border: none;
+  background-color: inherit;
+  color: #ccc;
+  font-size: 20px;
+  transition: border-bottom 0.5s;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgb(0, 241, 149);
+}
+
+footer {
+  text-align: center;
+  font-size: 20px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding-bottom: 20px;
+}
+
+@media screen and (max-width: 800px) {
+  #players__name .input__container {
+    flex-direction: column;
+  }
+
+  #players__name .input__container .input:first-child {
+    margin-bottom: 40px;
+  }
 }

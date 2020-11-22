@@ -4,27 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nerko+One&display=swap" rel="stylesheet"> 
     <link rel="stylesheet" href="style.css">
     <title>Tic-Tac-Toe!</title>
 </head>
 <body>
-    <h1>Tic-Tac-Toe!</h1>
+    <h1 id="title">Tic-Tac-Toe!</h1>
     <div id="players__name">
         <div class="input__container">
             <div class="input">
                 <label for="player__one"><small>Player1</small></label>
-                <input type="text" name="player__one" id="player__one" required>
+                <input type="text" name="player__one" id="player__one" placeholder="player name..." required>
             </div>
 
             <div class="input">
                 <label for="player__two"><small>Player2</small></label>
-                <input type="text" name="player__two" id="player__two" required>
+                <input type="text" name="player__two" id="player__two" placeholder="player name..." required>
             </div>
         </div>
 
         <button id="start__play">Play!</button>
     </div>
+
+
+    <div class="labels__container">
+        <h2 id="player__one__name"></h2>
+        <h2 id="player__two__name"></h2>
+    </div>
     <div id="board__container"></div>
-    <script src="app.js"></script>
+    <footer>Made with ❤️ in 🇮🇹</footer>
+    <script src="app.js" type="module"></script>
 </body>
 </html>
