@@ -16,7 +16,7 @@ const controller = (() => {
         view._showElement(view._DOM.inputDiv, 'flex');
         view._hideElement(board);
         view._hideElement(labelContainer);
-        view._updateMainTitle('Tic-Tac-Toe');
+        view._hideElement(view._DOM.modalBox);
     }
 
     startPlayBtn.addEventListener('click', () => {
@@ -33,6 +33,7 @@ const controller = (() => {
 
             model._gameActive = true;
             view._hideElement(view._DOM.inputDiv);
+            view._applyTextHighlightEffect(playerOneLabel);
             view._showElement(board, 'block');
             view._showElement(labelContainer, 'flex');
         }
@@ -44,7 +45,6 @@ const controller = (() => {
             let el = e.target;
         
             if (playerOne.turn) {
-                view._updateMainTitle(`It's ${playerOne.getName()}'s turn`);
                 view._applyTextHighlightEffect(playerOneLabel);
                 view._removeTextHighlightEffect(playerTwoLabel);
 
@@ -56,7 +56,6 @@ const controller = (() => {
             } else if (playerTwo.turn) {
                 view._applyTextHighlightEffect(playerTwoLabel);
                 view._removeTextHighlightEffect(playerOneLabel);
-                view._updateMainTitle(`It's ${playerTwo.getName()}'s turn`);
                 
                 if (el.textContent === "") {
                     view._updateBoard(el, playerTwo.getMark());
@@ -78,14 +77,25 @@ const controller = (() => {
             const checkTie = model._checkTie();
             
             if (checkWin.win) {
-                if (checkWin.winningArr.includes(playerOne.getMark())) alert(`${playerOne.getName()} win`);
-                if (checkWin.winningArr.includes(playerTwo.getMark())) alert(`${playerTwo.getName()} win`);
-                resetGame();
+                view._showElement(view._DOM.modalBox, 'block');
+
+                // Change title inside modal according to winner's name (or tie)
+                if (checkWin.winningArr.includes(playerOne.getMark())) {
+                    view._DOM.modalBoxWinnerTitle.textContent = `${playerOne.getName()} win`;
+                }
+                if (checkWin.winningArr.includes(playerTwo.getMark())) {
+                    view._DOM.modalBoxWinnerTitle.textContent = `${playerTwo.getName()} win`;
+                }
             } else if (checkTie) {
-                alert('Tie');
-                resetGame();
+                view._showElement(view._DOM.modalBox, 'block');
+                view._DOM.modalBoxWinnerTitle.textContent = 'Tie!';
             }
         }
+    });
+
+    // Reset the game after win
+    view._DOM.modalBoxResetBtn.addEventListener('click', () => {
+        resetGame();
     });
 
     const init = () => {

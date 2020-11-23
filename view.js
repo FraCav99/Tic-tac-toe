@@ -8,7 +8,10 @@ const view = (() => {
         mainTitle: document.getElementById('title'),
         labelsContainer: document.querySelector('.labels__container'),
         playerOneLabel: document.getElementById('player__one__name'),
-        playerTwoLabel: document.getElementById('player__two__name')
+        playerTwoLabel: document.getElementById('player__two__name'),
+        modalBox: document.querySelector('.modal'),
+        modalBoxWinnerTitle: document.querySelector('.modal .modal__content h3'),
+        modalBoxResetBtn: document.querySelector('.modal .modal__content .close-btn')
     };
 
     const _displayBoard = board => {
@@ -49,11 +52,6 @@ const view = (() => {
         el.style.display = displayMode;
     }
 
-
-    const _updateMainTitle = text => {
-        _DOM.mainTitle.textContent = text;
-    }
-
     const _applyTextHighlightEffect = el => {
         el.classList.add('highlight_name');
     }
@@ -69,7 +67,6 @@ const view = (() => {
         _resetBoard,
         _hideElement,
         _showElement,
-        _updateMainTitle,
         _applyTextHighlightEffect,
         _removeTextHighlightEffect
     }

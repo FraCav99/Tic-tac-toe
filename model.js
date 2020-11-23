@@ -168,10 +168,6 @@ const model = (() => {
         return { getName, getMark, turn }
     }
 
-    // const AiMove = () => {
-    //     let randomPick = Math.floor(Math.random() * 3);
-    // }
-
     return {
         _gameBoard,
         _gameActive,
